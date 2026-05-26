@@ -2,10 +2,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class Server {
+public class server {
 
-    // Lista que guarda todos los usuarios conectados
-    // Clave: nombre del usuario, Valor: su canal de comunicación
+    // Lista de los usuarios conectados
     static Map<String, PrintWriter> usuariosConectados = new HashMap<>();
 
     public static void main(String[] args) {
@@ -16,17 +15,12 @@ public class Server {
         System.out.println("Esperando conexiones en puerto " + puerto + "...");
         System.out.println("========================");
 
-        // ServerSocket es equivalente a socket() + bind() + listen() en C
-        // Queda escuchando en el puerto indicado
+        // Escuchar el puerto indicado
         try (ServerSocket servidorSocket = new ServerSocket(puerto)) {
 
-            // Bucle infinito: el servidor nunca para de aceptar clientes
+            // Bucle infinito: el servidor nunca deja de aceptar clientes
             while (true) {
-                // accept() se pausa aquí hasta que llegue un cliente
                 Socket socketCliente = servidorSocket.accept();
-
-                // Cada cliente se maneja en un hilo separado
-                // así el servidor puede atender varios clientes al mismo tiempo
                 Thread hiloCliente = new Thread(new ManejadorCliente(socketCliente));
                 hiloCliente.start();
             }
@@ -36,9 +30,7 @@ public class Server {
         }
     }
 
-    // -------------------------------------------------------
-    // Clase interna: maneja cada cliente en su propio hilo
-    // -------------------------------------------------------
+    // Clase para cada cliente en su propio hilo
     static class ManejadorCliente implements Runnable {
 
         private Socket socket;
@@ -84,12 +76,11 @@ public class Server {
                     // Si el usuario escribe "chao", termina su sesión
                     if (mensajeRecibido.equalsIgnoreCase("chao")) {
                         System.out.println("El usuario \"" + nombreUsuario + "\" abandonó");
-                        salida.println("Has salido del chat. ¡Hasta luego!");
+                        salida.println("Has finalizado este chat. ¡Hasta luego!");
                         break;
                     }
 
-                    // Formato esperado: destinatario:mensaje
-                    // Ejemplo: poli02:Hola, ¿cómo estás?
+                    // Formato 
                     if (mensajeRecibido.contains(":")) {
                         String[] partes = mensajeRecibido.split(":", 2);
                         String destinatario = partes[0].trim();
